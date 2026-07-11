@@ -1,0 +1,68 @@
+# ==========================================
+# GITIGNORE - LAPAK KLIWONAN PROJECT
+# ==========================================
+
+# 1. Environment Files & Secrets (CRITICAL)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+
+# 2. Dependency Folders
+node_modules/
+jspm_packages/
+backend/node_modules/
+
+# 3. Build & Production Outputs
+dist/
+build/
+.output/
+.next/
+.nuxt/
+out/
+coverage/
+
+# 4. System-specific Logs & Crash Dumps
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 5. OS-specific Metadata Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# 6. IDE / Editor Configurations
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.project
+.classpath
+.settings/
+
+# 7. Testing & Coverage
+.nyc_output/
+coverage/
+.jest/
+
+# 8. Temporary Files & Caches
+.eslintcache
+.stylelintcache
+.npm/
+.yarn/
+.pnp.*
