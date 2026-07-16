@@ -103,6 +103,74 @@ const authHandler = {
         message: 'Internal server error'
       });
     }
+  },
+
+  /**
+   * Handles GET /api/auth/users
+   */
+  async getUsers(req, res) {
+    try {
+      const users = await authService.getAllUsers();
+      return res.status(200).json({
+        status: 'success',
+        data: users
+      });
+    } catch (error) {
+      console.error('[authHandler.getUsers] Internal Error:', error);
+      return res.status(500).json({
+        status: 'error',
+        message: 'Internal server error'
+      });
+    }
+  },
+
+  /**
+   * Handles DELETE /api/auth/users/:id
+   */
+  async deleteUser(req, res) {
+    try {
+      const { id } = req.params;
+      await authService.deleteUser(id);
+      return res.status(200).json({
+        status: 'success',
+        message: 'User successfully deleted'
+      });
+    } catch (error) {
+      console.error('[authHandler.deleteUser] Internal Error:', error);
+      return res.status(500).json({
+        status: 'error',
+        message: 'Internal server error'
+      });
+    }
+  },
+
+  /**
+   * Handles PUT /api/auth/users/:id/password
+   */
+  async updateUserPassword(req, res) {
+    try {
+      const { id } = req.params;
+      const { password } = req.body;
+      
+      if (!password) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Password is required'
+        });
+      }
+
+      await authService.updateUserPassword(id, password);
+      return res.status(200).json({
+        status: 'success',
+        message: 'Password successfully updated'
+      });
+    } catch (error) {
+      console.error('[authHandler.updateUserPassword] Internal Error:', error);
+      return res.status(500).json({
+        status: 'error',
+        message: 'Internal server error'
+      });
+    }
   }
 };
 

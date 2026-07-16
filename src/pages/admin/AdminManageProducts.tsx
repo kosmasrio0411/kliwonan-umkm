@@ -1,17 +1,23 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { Product, ProductMedia } from '../../types';
 import { PRODUCTS as initialProducts } from '../../data/products';
 import ProductFormModal from '../../components/admin/ProductFormModal';
 
 export default function AdminManageProducts() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [successMessage, setSuccessMessage] = useState<string | null>((location.state as any)?.successMessage || null);
   
   const [productsList, setProductsList] = useState<Product[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(false);
   const [owners, setOwners] = useState<{id: string, username: string}[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('Semua');
+  const [sortOrder, setSortOrder] = useState('newest');
   
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const userRole = user.role;
@@ -43,6 +49,16 @@ export default function AdminManageProducts() {
     }
   }, []);
 
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage(null);
+        window.history.replaceState({}, document.title);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage]);
+
   const fetchOwners = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -71,9 +87,8 @@ export default function AdminManageProducts() {
     setSearchParams({ action: 'add' });
   };
 
-  const handleOpenEditModal = (product: Product) => {
-    setEditingProduct(product);
-    setIsModalOpen(true);
+  const handleOpenEditPage = (product: Product) => {
+    navigate(`/admin/products/edit/${product.id}`);
   };
 
   const handleCloseModal = () => {
@@ -124,6 +139,7 @@ export default function AdminManageProducts() {
       if (response.ok) {
         fetchProducts();
         handleCloseModal();
+        setSuccessMessage(editingProduct ? 'Produk berhasil diperbarui!' : 'Produk baru berhasil ditambahkan!');
       } else {
         const data = await response.json();
         alert(`Gagal menyimpan: ${data.message}`);
@@ -133,9 +149,39 @@ export default function AdminManageProducts() {
     }
   };
 
+  // Filter products based on search query and category
+  let filteredProducts = productsList.filter(product => {
+    const searchTarget = `${product.name || ''} ${product.short_description || product.description || ''} ${product.long_description || ''}`;
+    const matchesSearch = searchTarget.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = categoryFilter === 'Semua' || product.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
+  // Sort products
+  if (sortOrder === 'price-low') {
+    filteredProducts.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
+  } else if (sortOrder === 'price-high') {
+    filteredProducts.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
+  } else {
+    // Default newest (assuming higher id means newer)
+    filteredProducts.sort((a, b) => {
+      const idA = typeof a.id === 'string' ? a.id : String(a.id);
+      const idB = typeof b.id === 'string' ? b.id : String(b.id);
+      return idB.localeCompare(idA);
+    });
+  }
+
   return (
     <div className="p-4 md:p-8 md:px-[80px] max-w-7xl mx-auto w-full flex-1 flex flex-col gap-lg mt-lg">
       
+      {/* Toast Notification */}
+      {successMessage && (
+        <div className="fixed top-8 left-1/2 -translate-x-1/2 z-50 bg-primary-container text-on-primary-container px-6 py-3 rounded-full shadow-level-2 border border-primary/20 flex items-center gap-2 animate-fade-in">
+          <span className="material-symbols-outlined">check_circle</span>
+          <span className="font-label-md font-medium">{successMessage}</span>
+        </div>
+      )}
+
       {/* Header Section */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
         <div>
@@ -161,12 +207,38 @@ export default function AdminManageProducts() {
             className="w-full bg-surface-container-low border-none rounded-lg pl-xl pr-md py-sm font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary transition-shadow" 
             placeholder="Cari produk..." 
             type="text" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <button className="bg-surface-container-low text-on-surface border border-outline-variant font-label-md text-label-md px-md py-sm rounded-lg flex items-center gap-sm hover:bg-surface-container transition-colors">
-          <span className="material-symbols-outlined text-[20px]">filter_list</span>
-          Filter
-        </button>
+        <div className="relative">
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="appearance-none bg-surface-container-low text-on-surface border border-outline-variant font-label-md text-label-md px-md pr-xl py-sm rounded-lg flex items-center gap-sm hover:bg-surface-container transition-colors cursor-pointer"
+          >
+            <option value="Semua">Kategori: Semua</option>
+            <option value="UMKM">UMKM</option>
+            <option value="Hasil Pertanian">Hasil Pertanian</option>
+          </select>
+          <span className="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-[20px]">
+            expand_more
+          </span>
+        </div>
+        <div className="relative">
+          <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="appearance-none bg-surface-container-low text-on-surface border border-outline-variant font-label-md text-label-md px-md pr-xl py-sm rounded-lg flex items-center gap-sm hover:bg-surface-container transition-colors cursor-pointer"
+          >
+            <option value="newest">Terbaru</option>
+            <option value="price-low">Harga: Rendah ke Tinggi</option>
+            <option value="price-high">Harga: Tinggi ke Rendah</option>
+          </select>
+          <span className="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-[20px]">
+            expand_more
+          </span>
+        </div>
       </div>
 
       {/* Data Table Section */}
@@ -183,7 +255,7 @@ export default function AdminManageProducts() {
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-container-high font-body-md text-body-md text-on-surface">
-              {productsList.map((product) => (
+              {filteredProducts.map((product) => (
                 <tr key={product.id} className="hover:bg-surface-bright transition-colors group">
                   <td className="p-md">
                     <img 
@@ -195,7 +267,7 @@ export default function AdminManageProducts() {
                   <td className="p-md font-medium text-on-surface">{product.name}</td>
                   <td className="p-md hidden sm:table-cell text-on-surface-variant">
                     <span className={`px-sm py-xs rounded-full font-label-sm text-label-sm ${
-                      product.category === 'Makanan Ringan' 
+                      product.category === 'UMKM' 
                         ? 'bg-secondary-container/20 text-secondary'
                         : 'bg-primary-container/20 text-primary'
                     }`}>
@@ -206,7 +278,7 @@ export default function AdminManageProducts() {
                   <td className="p-md text-right whitespace-nowrap">
                     <div className="flex items-center justify-end gap-sm transition-opacity">
                       <button 
-                        onClick={() => handleOpenEditModal(product)}
+                        onClick={() => handleOpenEditPage(product)}
                         className="p-sm text-outline border border-outline-variant rounded-md hover:bg-surface-container-low transition-colors" 
                         title="Edit"
                       >
@@ -224,10 +296,10 @@ export default function AdminManageProducts() {
                 </tr>
               ))}
               
-              {productsList.length === 0 && (
+              {filteredProducts.length === 0 && (
                 <tr>
                   <td colSpan={5} className="p-xl text-center text-on-surface-variant">
-                    Belum ada produk yang ditambahkan.
+                    {productsList.length === 0 ? 'Belum ada produk yang ditambahkan.' : 'Tidak ada produk yang cocok dengan pencarian Anda.'}
                   </td>
                 </tr>
               )}
@@ -236,9 +308,9 @@ export default function AdminManageProducts() {
         </div>
         
         {/* Pagination Footer */}
-        {productsList.length > 0 && (
+        {filteredProducts.length > 0 && (
           <div className="p-md border-t border-surface-container-high bg-surface-container-lowest flex justify-between items-center text-on-surface-variant font-label-sm text-label-sm">
-            <span>Menampilkan 1-{productsList.length} dari {productsList.length} produk</span>
+            <span>Menampilkan 1-{filteredProducts.length} dari {filteredProducts.length} produk</span>
             <div className="flex gap-xs">
               <button className="w-8 h-8 rounded border border-outline-variant flex items-center justify-center hover:bg-surface-container disabled:opacity-50" disabled>
                 <span className="material-symbols-outlined text-[18px]">chevron_left</span>

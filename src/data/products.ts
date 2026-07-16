@@ -8,7 +8,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 1,
     name: 'Kopi Arabika Gayo Blend',
-    category: 'Makanan Ringan',
+    category: 'UMKM',
     description:
       'Biji kopi pilihan dari dataran tinggi Gayo, disangrai medium untuk aroma maksimal.',
     price: 'Rp 85.000',
@@ -32,7 +32,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 3,
     name: 'Keripik Pisang Kepok Manis',
-    category: 'Makanan Ringan',
+    category: 'UMKM',
     description:
       'Cemilan renyah dari pisang kepok pilihan, digoreng dengan minyak kelapa murni.',
     price: 'Rp 25.000',
@@ -55,4 +55,4 @@ export const PRODUCTS: Product[] = [
   },
 ];
 
-export const CATEGORIES = ['Semua', 'Makanan Ringan', 'Hasil Pertanian'] as const;
+export const CATEGORIES = ['Semua', 'UMKM', 'Hasil Pertanian'] as const;

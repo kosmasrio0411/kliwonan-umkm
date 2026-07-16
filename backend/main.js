@@ -14,10 +14,13 @@ const PORT = process.env.PORT || 3000;
 app.use(cors()); // Allow cross-origin requests from the React frontend
 app.use(express.json()); // Parse JSON payloads
 
+import dashboardRouter from './api/router/dashboardRouter.js';
+
 // Mount routers
 // All authentication routes will be accessible under /api
 app.use('/api', authRouter);
 app.use('/api/products', productRouter);
+app.use('/api/dashboard', dashboardRouter);
 
 // Basic health check route
 app.get('/health', (req, res) => {

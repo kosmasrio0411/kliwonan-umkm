@@ -6,7 +6,7 @@ import userRepository from '../repository/userRepository.js';
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret';
-const JWT_EXPIRES_IN = '24h';
+const JWT_EXPIRES_IN = '45m';
 
 /**
  * authService
@@ -93,6 +93,28 @@ const authService = {
    */
   async getOwners() {
     return await userRepository.getOwners();
+  },
+
+  /**
+   * Fetches all users
+   */
+  async getAllUsers() {
+    return await userRepository.getAllUsers();
+  },
+
+  /**
+   * Deletes a user
+   */
+  async deleteUser(id) {
+    return await userRepository.deleteUser(id);
+  },
+
+  /**
+   * Updates a user's password
+   */
+  async updateUserPassword(id, newPassword) {
+    const password_hash = await bcrypt.hash(newPassword, 10);
+    return await userRepository.updateUserPassword(id, password_hash);
   }
 };
 

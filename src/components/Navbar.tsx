@@ -57,13 +57,7 @@ export default function Navbar({ categories, activeCategory, onCategoryChange, s
               className="w-32 md:w-48 pl-9 pr-3 py-1.5 bg-surface-container border border-outline-variant rounded-full text-label-md font-label-md focus:ring-1 focus:ring-primary outline-none text-on-surface placeholder:text-on-surface-variant transition-all"
             />
           </div>
-          <button
-            id="btn-basket"
-            className="p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant"
-            aria-label="Keranjang belanja"
-          >
-            <span className="material-symbols-outlined">shopping_basket</span>
-          </button>
+
           <button
             id="btn-account"
             onClick={() => navigate('/admin')}

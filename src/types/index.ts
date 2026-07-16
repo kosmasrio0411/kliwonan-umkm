@@ -27,7 +27,7 @@ export interface Product {
 }
 
 // ─── Category ─────────────────────────────────────────────────────────────────
-export type Category = 'Semua' | 'Makanan Ringan' | 'Hasil Pertanian';
+export type Category = 'Semua' | 'UMKM' | 'Hasil Pertanian';
 
 // ─── Sort Order ───────────────────────────────────────────────────────────────
 export type SortOrder = 'newest' | 'price-low' | 'price-high';

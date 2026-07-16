@@ -6,6 +6,7 @@ import PartnerPage from './pages/PartnerPage';
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminManageProducts from './pages/admin/AdminManageProducts';
+import AdminEditProduct from './pages/admin/AdminEditProduct';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminRegister from './pages/admin/AdminRegister';
 
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="products" element={<AdminManageProducts />} />
+          <Route path="products/edit/:id" element={<AdminEditProduct />} />
           <Route path="register" element={<AdminRegister />} />
         </Route>
 

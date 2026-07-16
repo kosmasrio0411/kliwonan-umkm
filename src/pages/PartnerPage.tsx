@@ -1,6 +1,4 @@
-import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { CATEGORIES } from '../data/products';
 import { useNavigate } from 'react-router-dom';
 
 export default function PartnerPage() {
@@ -8,15 +6,28 @@ export default function PartnerPage() {
 
   return (
     <div className="bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col">
-      <Navbar
-        categories={CATEGORIES}
-        activeCategory="Semua"
-        onCategoryChange={(cat) => navigate(`/?category=${cat}`)}
-      />
+      <header className="bg-surface shadow-sm sticky top-0 z-50 w-full">
+        <div className="flex justify-between items-center w-full px-container-margin py-md max-w-7xl mx-auto">
+          <button
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 text-primary hover:text-primary-container transition-colors group"
+            aria-label="Kembali ke Beranda"
+          >
+            <span className="material-symbols-outlined group-hover:-translate-x-1 transition-transform">
+              arrow_back
+            </span>
+            <span className="font-label-md text-label-md">Kembali ke Beranda</span>
+          </button>
+          <div className="font-headline-lg text-headline-lg font-bold text-primary flex items-center gap-2 min-h-[40px]">
+            <span className="material-symbols-outlined text-primary" data-fill="1" style={{ fontSize: '32px' }}>spa</span>
+            <span className="hidden sm:inline">Lapak Kliwonan</span>
+          </div>
+        </div>
+      </header>
 
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="bg-surface-container-low py-xxxl px-container-margin">
+        <section className="bg-surface-container-low py-xxl px-container-margin">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="font-display-lg md:text-display-lg text-[32px] text-primary mb-md">
               Bergabung Menjadi Mitra UMKM
@@ -59,7 +70,7 @@ export default function PartnerPage() {
             <div>
               <h2 className="font-headline-md text-headline-md text-primary mb-sm">Langkah Pendaftaran</h2>
               <ol className="list-decimal list-inside font-body-md text-body-md text-on-surface-variant space-y-4">
-                <li><strong className="text-on-background">Siapkan Data:</strong> Siapkan KTP, foto produk unggulan, dan detail informasi produk (harga, deskripsi, komposisi).</li>
+                <li><strong className="text-on-background">Siapkan Data:</strong> Siapkan foto produk unggulan, dan detail informasi produk (harga, deskripsi, komposisi).</li>
                 <li><strong className="text-on-background">Hubungi Admin:</strong> Hubungi tim Lapak Kliwonan melalui WhatsApp resmi kami di <a href="https://wa.me/6281234567890" className="text-primary hover:underline">0812-3456-7890</a>.</li>
                 <li><strong className="text-on-background">Kurasi & Verifikasi:</strong> Tim kami akan meninjau produk Anda untuk memastikan standar kualitas.</li>
                 <li><strong className="text-on-background">Mulai Berjualan:</strong> Setelah disetujui, produk Anda akan langsung tampil di etalase website Lapak Kliwonan!</li>

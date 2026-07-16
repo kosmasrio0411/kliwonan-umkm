@@ -85,6 +85,68 @@ const userRepository = {
       console.error('[userRepository.getOwners] Error:', err.message);
       throw err;
     }
+  },
+
+  /**
+   * Retrieves all users
+   */
+  async getAllUsers() {
+    try {
+      const { data: users, error } = await supabaseAdmin
+        .from('users')
+        .select('id, username, role')
+        .order('id', { ascending: false });
+
+      if (error) {
+        throw error;
+      }
+      return users;
+    } catch (err) {
+      console.error('[userRepository.getAllUsers] Error:', err.message);
+      throw err;
+    }
+  },
+
+  /**
+   * Deletes a user by ID
+   */
+  async deleteUser(id) {
+    try {
+      const { error } = await supabaseAdmin
+        .from('users')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        throw error;
+      }
+      return true;
+    } catch (err) {
+      console.error('[userRepository.deleteUser] Error:', err.message);
+      throw err;
+    }
+  },
+
+  /**
+   * Updates a user's password
+   */
+  async updateUserPassword(id, password_hash) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('users')
+        .update({ password_hash })
+        .eq('id', id)
+        .select('id, username')
+        .single();
+
+      if (error) {
+        throw error;
+      }
+      return data;
+    } catch (err) {
+      console.error('[userRepository.updateUserPassword] Error:', err.message);
+      throw err;
+    }
   }
 };
 
