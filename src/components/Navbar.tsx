@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import type { Category } from '../types';
+import logoImg from '../assets/logo_kliwonan.png';
 
 interface NavbarProps {
   categories: readonly string[];
@@ -16,15 +17,9 @@ export default function Navbar({ categories, activeCategory, onCategoryChange, s
       {/* Main bar */}
       <div className="flex justify-between items-center w-full px-container-margin py-md max-w-7xl mx-auto">
         {/* Logo */}
-        <div className="font-headline-lg text-headline-lg font-bold text-primary flex items-center gap-2">
-          <span
-            className="material-symbols-outlined text-primary"
-            data-fill="1"
-            style={{ fontSize: '32px' }}
-          >
-            spa
-          </span>
-          <span className="hidden sm:inline">Lapak Kliwonan</span>
+        <div className="flex items-center gap-2">
+          <img src={logoImg} alt="Logo Kliwonan" className="h-10 w-auto object-contain" />
+          <span className="hidden sm:inline font-headline-lg text-headline-lg font-bold text-primary">Lapak Kliwonan</span>
         </div>
 
         {/* Desktop Navigation Links */}
@@ -70,7 +65,7 @@ export default function Navbar({ categories, activeCategory, onCategoryChange, s
       </div>
 
       {/* Mobile Category Scroll */}
-      <div className="md:hidden flex overflow-x-auto px-container-margin py-sm gap-md border-t border-outline-variant/30 scrollbar-hide">
+      <div className="md:hidden flex overflow-x-auto justify-center px-container-margin py-sm gap-md border-t border-outline-variant/30 scrollbar-hide">
         {categories.map((cat) => (
           <button
             key={cat}

@@ -1,5 +1,6 @@
 import { NavLink, Outlet, Navigate, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import logoImg from '../../assets/logo_kliwonan.png';
 
 export default function AdminLayout() {
   const navigate = useNavigate();
@@ -8,7 +9,23 @@ export default function AdminLayout() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const role = user.role;
 
-  if (!token) {
+  let isTokenValid = false;
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (payload.exp && payload.exp * 1000 > Date.now()) {
+        isTokenValid = true;
+      }
+    } catch (e) {
+      // Ignore parse error
+    }
+  }
+
+  if (!isTokenValid) {
+    if (token) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
     return <Navigate to="/admin/login" replace />;
   }
 
@@ -37,9 +54,9 @@ export default function AdminLayout() {
           {/* Admin Info */}
           <div className="mb-8 px-4 flex flex-col items-center gap-3">
             <img
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtg7hRHwFPauRDOPwfIddc22tPDeGdx-b_xJF5lGet5zeU7eo_DBARiKGUWGvhtcMjUQjl45Lhd-HZzc77IjVdigoSIdbsAxXidrcszkahWCW4SY8h2TGHtLsBNtR_q2Y7YvP5r-sx-EO9XWxeOThi8uU02EawrlTFCGaUETP4D-8Yyhi-xEkG9mnEG6MlAu-WlqoiQLUgLoMXIH6MbE1vlOc9wm5_66dS6fAGPfqf0v0I44P9919b"
-              alt="Admin Profile"
-              className="w-16 h-16 rounded-full object-cover shadow-level-1"
+              src={logoImg}
+              alt="Logo Kliwonan"
+              className="w-20 h-20 object-contain drop-shadow-sm"
             />
             <div className="text-center">
               <h1 className="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">
@@ -146,9 +163,12 @@ export default function AdminLayout() {
       <main className="flex-1 md:ml-64 w-full md:w-[calc(100%-16rem)] flex flex-col">
         {/* Mobile Header (Fallback for non-desktop) */}
         <header className="md:hidden flex items-center justify-between p-4 bg-surface/80 backdrop-blur-md sticky top-0 z-30 shadow-level-1">
-          <h1 className="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">
-            Lapak Kliwonan
-          </h1>
+          <div className="flex items-center gap-2">
+            <img src={logoImg} alt="Logo Kliwonan" className="h-8 w-auto object-contain" />
+            <h1 className="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">
+              Lapak Kliwonan
+            </h1>
+          </div>
           <button className="text-primary p-2" onClick={() => setIsMobileMenuOpen(true)}>
             <span className="material-symbols-outlined">menu</span>
           </button>

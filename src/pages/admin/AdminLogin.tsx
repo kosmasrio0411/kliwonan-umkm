@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import logoImg from '../../assets/logo_kliwonan.png';
 
 export default function AdminLogin() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -51,9 +53,7 @@ export default function AdminLogin() {
         <div className="bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl border border-outline-variant/30 rounded-2xl shadow-level-3 p-8 sm:p-10">
           
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-container text-on-primary-container mb-4 shadow-sm">
-              <span className="material-symbols-outlined text-4xl" data-fill="1">spa</span>
-            </div>
+            <img src={logoImg} alt="Logo Kliwonan" className="w-24 h-24 object-contain mx-auto mb-4 drop-shadow-md" />
             <h1 className="font-display-lg text-[32px] font-bold text-primary dark:text-inverse-primary mb-2">Lapak Kliwonan</h1>
             <p className="font-body-md text-on-surface-variant">Admin Dashboard Login</p>
           </div>
@@ -96,13 +96,23 @@ export default function AdminLogin() {
                 </div>
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-surface-container-low border border-outline-variant rounded-lg text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-on-surface-variant/70"
+                  className="w-full pl-10 pr-12 py-2.5 bg-surface-container-low border border-outline-variant rounded-lg text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-on-surface-variant/70"
                   placeholder="Masukkan password"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-on-surface-variant hover:text-primary focus:outline-none transition-colors"
+                  aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+                >
+                  <span className="material-symbols-outlined text-[20px]">
+                    {showPassword ? 'visibility_off' : 'visibility'}
+                  </span>
+                </button>
               </div>
             </div>
 

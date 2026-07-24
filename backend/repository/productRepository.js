@@ -1,105 +1,121 @@
-import supabase, { supabaseAdmin } from '../config/db.js';
+import db from '../config/db.js';
+import crypto from 'crypto';
 
 class ProductRepository {
   async getAll(search, category, sort) {
-    let query = supabase.from('products').select('*');
+    let sql = 'SELECT * FROM products';
+    let args = [];
+    let conditions = [];
 
     if (category && category !== 'Semua') {
-      query = query.eq('category', category);
+      conditions.push('category = ?');
+      args.push(category);
     }
 
     if (search) {
-      query = query.or(`name.ilike.%${search}%,short_description.ilike.%${search}%,long_description.ilike.%${search}%`);
+      // Use LIKE for case-insensitive search in standard SQLite text
+      conditions.push('(name LIKE ? OR short_description LIKE ? OR long_description LIKE ?)');
+      const likeSearch = `%${search}%`;
+      args.push(likeSearch, likeSearch, likeSearch);
+    }
+
+    if (conditions.length > 0) {
+      sql += ' WHERE ' + conditions.join(' AND ');
     }
 
     if (sort === 'price-low') {
-      query = query.order('price', { ascending: true });
+      sql += ' ORDER BY price ASC';
     } else if (sort === 'price-high') {
-      query = query.order('price', { ascending: false });
+      sql += ' ORDER BY price DESC';
     } else {
-      query = query.order('created_at', { ascending: false });
+      sql += ' ORDER BY created_at DESC';
     }
 
-    const { data, error } = await query;
-    if (error) throw error;
-    return data;
+    const { rows } = await db.execute({ sql, args });
+    return rows;
   }
 
   async getManaged(role, userId) {
-    let query = supabaseAdmin.from('products').select('*').order('id', { ascending: true });
+    let sql = 'SELECT * FROM products';
+    let args = [];
 
     if (role === 'owner_produk') {
-      query = query.eq('user_id', userId);
+      sql += ' WHERE user_id = ?';
+      args.push(userId);
     }
 
-    const { data, error } = await query;
-    if (error) throw error;
-    return data;
+    sql += ' ORDER BY id ASC';
+
+    const { rows } = await db.execute({ sql, args });
+    return rows;
   }
 
   async getById(id) {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const { rows } = await db.execute({
+      sql: 'SELECT * FROM products WHERE id = ?',
+      args: [id]
+    });
     
-    if (error) {
-      if (error.code === 'PGRST116') return null; // Not found
-      throw error;
-    }
-    return data;
+    if (rows.length === 0) return null;
+    return rows[0];
   }
 
   async getMediaByProductId(id) {
-    const { data, error } = await supabase
-      .from('product_media')
-      .select('*')
-      .eq('product_id', id);
-    if (error) throw error;
-    return data;
+    const { rows } = await db.execute({
+      sql: 'SELECT * FROM product_media WHERE product_id = ?',
+      args: [id]
+    });
+    return rows;
   }
 
   async create(productData) {
-    const { data, error } = await supabaseAdmin
-      .from('products')
-      .insert(productData)
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+    // Generate UUID manually since SQLite doesn't have uuid_generate_v4()
+    const id = crypto.randomUUID();
+    const payload = { id, ...productData };
+    
+    const keys = Object.keys(payload);
+    const values = Object.values(payload);
+    
+    const placeholders = keys.map(() => '?').join(', ');
+    const sql = `INSERT INTO products (${keys.join(', ')}) VALUES (${placeholders}) RETURNING *`;
+    
+    const { rows } = await db.execute({ sql, args: values });
+    return rows[0];
   }
 
   async update(id, updateData) {
-    const { data, error } = await supabaseAdmin
-      .from('products')
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+    const keys = Object.keys(updateData);
+    const values = Object.values(updateData);
+    
+    if (keys.length === 0) {
+      return this.getById(id);
+    }
+
+    const setClause = keys.map(k => `${k} = ?`).join(', ');
+    const sql = `UPDATE products SET ${setClause} WHERE id = ? RETURNING *`;
+    
+    const args = [...values, id];
+
+    const { rows } = await db.execute({ sql, args });
+    if (rows.length === 0) return null;
+    return rows[0];
   }
 
   async delete(id) {
-    const { error } = await supabaseAdmin
-      .from('products')
-      .delete()
-      .eq('id', id);
-    if (error) throw error;
+    await db.execute({
+      sql: 'DELETE FROM products WHERE id = ?',
+      args: [id]
+    });
   }
 
   async getOwnerId(id) {
-    const { data, error } = await supabaseAdmin
-      .from('products')
-      .select('user_id')
-      .eq('id', id)
-      .single();
-    if (error) {
-      if (error.code === 'PGRST116') return null;
-      throw error;
-    }
-    return data.user_id;
+    const { rows } = await db.execute({
+      sql: 'SELECT user_id FROM products WHERE id = ?',
+      args: [id]
+    });
+    
+    if (rows.length === 0) return null;
+    return rows[0].user_id;
   }
 }
 

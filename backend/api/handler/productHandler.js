@@ -1,4 +1,5 @@
 import productService from '../../service/productService.js';
+import { uploadToCloudinary } from '../../config/cloudinary.js';
 
 export const getProducts = async (req, res) => {
   try {
@@ -51,6 +52,14 @@ export const getProductById = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
+    let imageUrl = req.body.imageUrl;
+    
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.buffer);
+      imageUrl = result.secure_url;
+      req.body.imageUrl = imageUrl;
+    }
+
     const data = await productService.createProduct(req.body, req.user.role, req.user.id);
 
     return res.status(201).json({
@@ -70,6 +79,14 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
+    let imageUrl = req.body.imageUrl;
+    
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.buffer);
+      imageUrl = result.secure_url;
+      req.body.imageUrl = imageUrl;
+    }
+
     const data = await productService.updateProduct(id, req.body, req.user.role, req.user.id);
 
     return res.status(200).json({

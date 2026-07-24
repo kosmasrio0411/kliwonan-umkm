@@ -119,7 +119,7 @@ export default function AdminManageProducts() {
     }
   };
 
-  const handleSaveProduct = async (productData: Omit<Product, 'id'>, mediaData: Omit<ProductMedia, 'id' | 'product_id'>[]) => {
+  const handleSaveProduct = async (productData: Omit<Product, 'id'>, mediaData: Omit<ProductMedia, 'id' | 'product_id'>[], thumbnailFile: File | null) => {
     try {
       const token = localStorage.getItem('token');
       const url = editingProduct 
@@ -127,13 +127,22 @@ export default function AdminManageProducts() {
         : 'http://localhost:8080/api/products';
       const method = editingProduct ? 'PUT' : 'POST';
 
+      const formData = new FormData();
+      Object.entries(productData).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          formData.append(key, value.toString());
+        }
+      });
+      if (thumbnailFile) {
+        formData.append('thumbnail', thumbnailFile);
+      }
+
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(productData)
+        body: formData
       });
 
       if (response.ok) {
@@ -202,9 +211,11 @@ export default function AdminManageProducts() {
       {/* Search and Filter Bar */}
       <div className="bg-surface p-md rounded-xl shadow-level-1 flex flex-col sm:flex-row gap-md border border-surface-container-high">
         <div className="relative flex-1">
-          <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline">search</span>
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-on-surface-variant">
+            <span className="material-symbols-outlined text-[20px]">search</span>
+          </div>
           <input 
-            className="w-full bg-surface-container-low border-none rounded-lg pl-xl pr-md py-sm font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary transition-shadow" 
+            className="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary transition-shadow outline-none" 
             placeholder="Cari produk..." 
             type="text" 
             value={searchQuery}

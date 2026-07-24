@@ -1,16 +1,16 @@
-import supabase, { supabaseAdmin } from '../config/db.js';
+import db from '../config/db.js';
 
 class DashboardRepository {
   async getOverviewStats(role, userId) {
-    let query = supabaseAdmin.from('products').select('*');
+    let sql = 'SELECT * FROM products';
+    let args = [];
 
     if (role === 'owner_produk') {
-      query = query.eq('user_id', userId);
+      sql += ' WHERE user_id = ?';
+      args.push(userId);
     }
 
-    const { data: products, error } = await query;
-    
-    if (error) throw error;
+    const { rows: products } = await db.execute({ sql, args });
 
     const totalProducts = products.length;
     
@@ -26,21 +26,27 @@ class DashboardRepository {
     // Get media count for these products
     let totalMedia = 0;
     if (totalProducts > 0) {
-      const productIds = products.map(p => p.id);
-      // Fallback if productIds length is too large for 'in', but we'll assume it's small enough for MSME
-      const { data: media, error: mediaError } = await supabaseAdmin
-        .from('product_media')
-        .select('id')
-        .in('product_id', productIds);
-        
-      if (!mediaError && media) {
+      const placeholders = products.map(() => '?').join(',');
+      const ids = products.map(p => p.id);
+      
+      try {
+        const { rows: media } = await db.execute({
+          sql: `SELECT id FROM product_media WHERE product_id IN (${placeholders})`,
+          args: ids
+        });
         totalMedia = media.length;
+      } catch (mediaError) {
+        console.error('[DashboardRepository.getOverviewStats] Error fetching media:', mediaError);
       }
     }
 
     // Recent activity (last 5 products created or updated)
-    // We sort by id desc since we don't know if created_at exists in products table.
-    const recentActivity = products.sort((a, b) => b.id - a.id).slice(0, 5);
+    const recentActivity = products.sort((a, b) => {
+      if (a.created_at && b.created_at) {
+        return new Date(b.created_at) - new Date(a.created_at);
+      }
+      return String(b.id).localeCompare(String(a.id));
+    }).slice(0, 5);
 
     return {
       totalProducts,

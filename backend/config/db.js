@@ -1,22 +1,20 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@libsql/client';
 import dotenv from 'dotenv';
 
 // Load environment variables from .env file
 dotenv.config();
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseAnonKey = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY;
+const tursoUrl = process.env.TURSO_DATABASE_URL;
+const tursoAuthToken = process.env.TURSO_AUTH_TOKEN;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('WARNING: Missing SUPABASE_URL or SUPABASE_PUBLISHABLE_KEY in environment variables.');
+if (!tursoUrl) {
+  console.warn('WARNING: Missing TURSO_DATABASE_URL in environment variables.');
 }
 
-const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
+// Initialize the Turso (libSQL) client
+const db = createClient({
+  url: tursoUrl || 'file:local.db',
+  authToken: tursoAuthToken,
+});
 
-// Initialize the Supabase client
-const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
-
-// Initialize the Supabase Admin client for backend operations that bypass RLS
-export const supabaseAdmin = createClient(supabaseUrl || '', supabaseSecretKey || '');
-
-export default supabase;
+export default db;

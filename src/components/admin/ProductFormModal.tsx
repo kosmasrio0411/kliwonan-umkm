@@ -4,7 +4,7 @@ import { Product, ProductMedia } from '../../types';
 interface ProductFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (product: Omit<Product, 'id'>, media: Omit<ProductMedia, 'id' | 'product_id'>[]) => void;
+  onSave: (product: Omit<Product, 'id'>, media: Omit<ProductMedia, 'id' | 'product_id'>[], thumbnailFile: File | null) => void;
   productToEdit?: Product | null;
   userRole?: string;
   owners?: {id: string, username: string}[];
@@ -19,6 +19,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
   const [shortDescription, setShortDescription] = useState('');
   const [longDescription, setLongDescription] = useState('');
   const [thumbnailUrl, setThumbnailUrl] = useState('');
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [userId, setUserId] = useState('');
   
   // Dynamic media rows state
@@ -35,6 +36,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
         setShortDescription(productToEdit.short_description || productToEdit.description || '');
         setLongDescription(productToEdit.long_description || '');
         setThumbnailUrl(productToEdit.thumbnail_url || productToEdit.imageUrl || '');
+        setThumbnailFile(null);
         setUserId(productToEdit.user_id || '');
         
         // Mock loading media rows if editing
@@ -52,6 +54,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
         setShortDescription('');
         setLongDescription('');
         setThumbnailUrl('');
+        setThumbnailFile(null);
         setUserId('');
         setMediaRows([]);
       }
@@ -96,7 +99,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
       ...(userId && { user_id: userId })
     };
 
-    onSave(productData, mediaRows);
+    onSave(productData, mediaRows, thumbnailFile);
   };
 
   return (
@@ -199,16 +202,24 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
               />
             </div>
 
-            {/* Thumbnail URL */}
+            {/* Thumbnail Upload */}
             <div className="flex flex-col gap-sm md:col-span-2">
-              <label className="font-label-md text-label-md text-on-surface">Thumbnail Utama (URL)</label>
+              <label className="font-label-md text-label-md text-on-surface">Upload Thumbnail Utama</label>
+              {thumbnailUrl && !thumbnailFile && (
+                <div className="mb-2">
+                  <img src={thumbnailUrl} alt="Current Thumbnail" className="h-24 w-24 object-cover rounded-lg border border-outline-variant" />
+                </div>
+              )}
               <input 
-                required
-                type="text"
-                value={thumbnailUrl}
-                onChange={e => setThumbnailUrl(e.target.value)}
-                placeholder="https://..."
-                className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-shadow"
+                type="file"
+                accept="image/*"
+                required={!thumbnailUrl}
+                onChange={e => {
+                  if (e.target.files && e.target.files[0]) {
+                    setThumbnailFile(e.target.files[0]);
+                  }
+                }}
+                className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-shadow file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-on-primary-container hover:file:bg-primary/20"
               />
             </div>
 
