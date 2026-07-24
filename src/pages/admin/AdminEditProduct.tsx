@@ -353,7 +353,7 @@ export default function AdminEditProduct() {
                     onChange={e => handleMediaChange(index, 'media_type', e.target.value as 'image' | 'video')}
                     className="bg-surface-container-highest border border-outline-variant/50 rounded-md px-2 py-1.5 font-body-md text-sm cursor-pointer"
                   >
-                    <option value="image">Gambar (Image)</option>
+                    <option value="image">Gambar</option>
                     <option value="video">Video</option>
                   </select>
                 </div>
