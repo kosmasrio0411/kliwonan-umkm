@@ -21,7 +21,7 @@ export default function AdminRegister() {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8080/api/auth/users', {
+      const response = await fetch('/api/auth/users', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -46,7 +46,7 @@ export default function AdminRegister() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8080/api/auth/register', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ export default function AdminRegister() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8080/api/auth/users/${id}`, {
+      const response = await fetch(`/api/auth/users/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -98,7 +98,7 @@ export default function AdminRegister() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8080/api/auth/users/${id}/password`, {
+      const response = await fetch(`/api/auth/users/${id}/password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -48,7 +48,7 @@ export default function ProductDetailPage() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/products/${id}`);
+        const response = await fetch(`/api/products/${id}`);
         const data = await response.json();
         if (response.ok && data.data) {
           setProduct(data.data);

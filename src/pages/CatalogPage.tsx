@@ -25,7 +25,7 @@ export default function CatalogPage() {
         if (activeCategory !== 'Semua') query.append('category', activeCategory);
         if (sortOrder !== 'newest') query.append('sort', sortOrder);
         
-        const response = await fetch(`http://localhost:8080/api/products?${query.toString()}`);
+        const response = await fetch(`/api/products?${query.toString()}`);
         const data = await response.json();
         if (data.status === 'success') {
           setProducts(data.data);

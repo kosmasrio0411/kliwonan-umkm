@@ -26,7 +26,7 @@ export default function AdminManageProducts() {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8080/api/products/manage', {
+      const response = await fetch('/api/products/manage', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -62,7 +62,7 @@ export default function AdminManageProducts() {
   const fetchOwners = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8080/api/auth/owners', {
+      const response = await fetch('/api/auth/owners', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -103,7 +103,7 @@ export default function AdminManageProducts() {
     if (confirmDelete) {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:8080/api/products/${id}`, {
+        const response = await fetch(`/api/products/${id}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -123,8 +123,8 @@ export default function AdminManageProducts() {
     try {
       const token = localStorage.getItem('token');
       const url = editingProduct 
-        ? `http://localhost:8080/api/products/${editingProduct.id}` 
-        : 'http://localhost:8080/api/products';
+        ? `/api/products/${editingProduct.id}` 
+        : '/api/products';
       const method = editingProduct ? 'PUT' : 'POST';
 
       const formData = new FormData();

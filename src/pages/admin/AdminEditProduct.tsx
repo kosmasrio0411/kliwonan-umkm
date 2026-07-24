@@ -34,7 +34,7 @@ export default function AdminEditProduct() {
   const fetchOwners = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8080/api/auth/owners', {
+      const response = await fetch('/api/auth/owners', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -49,7 +49,7 @@ export default function AdminEditProduct() {
   const fetchProductDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:8080/api/products/${id}`);
+      const response = await fetch(`/api/products/${id}`);
       const data = await response.json();
       
       if (response.ok) {
@@ -114,7 +114,7 @@ export default function AdminEditProduct() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8080/api/products/${id}`, {
+      const response = await fetch(`/api/products/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

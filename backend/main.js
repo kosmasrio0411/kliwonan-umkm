@@ -27,7 +27,11 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'success', message: 'Backend is running correctly' });
 });
 
-// Start the// Start server
-app.listen(PORT, () => {
-  console.log(`[Lapak Kliwonan] Server is running on port ${PORT}`);
-});
+// Start server only if not in production/Vercel
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`[Lapak Kliwonan] Server is running on port ${PORT}`);
+  });
+}
+
+export default app;
