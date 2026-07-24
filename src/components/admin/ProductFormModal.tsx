@@ -189,6 +189,18 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
               />
             </div>
 
+            {/* Deskripsi Lengkap */}
+            <div className="flex flex-col gap-sm md:col-span-2">
+              <label className="font-label-md text-label-md text-on-surface">Deskripsi Lengkap</label>
+              <textarea 
+                value={longDescription}
+                onChange={e => setLongDescription(e.target.value)}
+                rows={4}
+                placeholder="Penjelasan detail produk untuk halaman produk detail..."
+                className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-shadow resize-y"
+              ></textarea>
+            </div>
+
             {/* WhatsApp */}
             <div className="flex flex-col gap-sm md:col-span-2">
               <label className="font-label-md text-label-md text-on-surface">Nomor WhatsApp (dengan kode negara, misal 628...)</label>
@@ -236,17 +248,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
               ></textarea>
             </div>
 
-            {/* Deskripsi Lengkap */}
-            <div className="flex flex-col gap-sm md:col-span-2">
-              <label className="font-label-md text-label-md text-on-surface">Deskripsi Lengkap</label>
-              <textarea 
-                value={longDescription}
-                onChange={e => setLongDescription(e.target.value)}
-                rows={4}
-                placeholder="Penjelasan detail produk untuk halaman produk detail..."
-                className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-shadow resize-y"
-              ></textarea>
-            </div>
+
           </div>
 
           <hr className="border-outline-variant/30" />
