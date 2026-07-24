@@ -54,13 +54,42 @@ export const createProduct = async (req, res) => {
   try {
     let imageUrl = req.body.imageUrl;
     
-    if (req.file) {
-      const result = await uploadToCloudinary(req.file.buffer);
+    if (req.files && req.files['thumbnail'] && req.files['thumbnail'][0]) {
+      const result = await uploadToCloudinary(req.files['thumbnail'][0].buffer);
       imageUrl = result.secure_url;
       req.body.imageUrl = imageUrl;
     }
 
-    const data = await productService.createProduct(req.body, req.user.role, req.user.id);
+    // Handle gallery files
+    const mediaList = [];
+    
+    // Existing media from form data
+    if (req.body.existingMedia) {
+      try {
+        const existing = JSON.parse(req.body.existingMedia);
+        mediaList.push(...existing);
+      } catch (e) {
+        console.error('Failed to parse existingMedia', e);
+      }
+    }
+
+    // New gallery file uploads
+    if (req.files && req.files['gallery']) {
+      const galleryFiles = req.files['gallery'];
+      let types = req.body.galleryTypes || [];
+      if (!Array.isArray(types)) {
+        types = [types];
+      }
+      
+      for (let i = 0; i < galleryFiles.length; i++) {
+        const file = galleryFiles[i];
+        const mediaType = types[i] || 'image'; // fallback
+        const result = await uploadToCloudinary(file.buffer);
+        mediaList.push({ media_url: result.secure_url, media_type: mediaType });
+      }
+    }
+
+    const data = await productService.createProduct(req.body, mediaList, req.user.role, req.user.id);
 
     return res.status(201).json({
       status: 'success',
@@ -81,13 +110,42 @@ export const updateProduct = async (req, res) => {
     const { id } = req.params;
     let imageUrl = req.body.imageUrl;
     
-    if (req.file) {
-      const result = await uploadToCloudinary(req.file.buffer);
+    if (req.files && req.files['thumbnail'] && req.files['thumbnail'][0]) {
+      const result = await uploadToCloudinary(req.files['thumbnail'][0].buffer);
       imageUrl = result.secure_url;
       req.body.imageUrl = imageUrl;
     }
 
-    const data = await productService.updateProduct(id, req.body, req.user.role, req.user.id);
+    // Handle gallery files
+    const mediaList = [];
+    
+    // Existing media from form data
+    if (req.body.existingMedia) {
+      try {
+        const existing = JSON.parse(req.body.existingMedia);
+        mediaList.push(...existing);
+      } catch (e) {
+        console.error('Failed to parse existingMedia', e);
+      }
+    }
+
+    // New gallery file uploads
+    if (req.files && req.files['gallery']) {
+      const galleryFiles = req.files['gallery'];
+      let types = req.body.galleryTypes || [];
+      if (!Array.isArray(types)) {
+        types = [types];
+      }
+      
+      for (let i = 0; i < galleryFiles.length; i++) {
+        const file = galleryFiles[i];
+        const mediaType = types[i] || 'image'; // fallback
+        const result = await uploadToCloudinary(file.buffer);
+        mediaList.push({ media_url: result.secure_url, media_type: mediaType });
+      }
+    }
+
+    const data = await productService.updateProduct(id, req.body, mediaList, req.user.role, req.user.id);
 
     return res.status(200).json({
       status: 'success',

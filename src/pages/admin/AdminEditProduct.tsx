@@ -22,7 +22,8 @@ export default function AdminEditProduct() {
   const [longDescription, setLongDescription] = useState('');
   const [thumbnailUrl, setThumbnailUrl] = useState('');
   const [userId, setUserId] = useState('');
-  const [mediaRows, setMediaRows] = useState<Array<{ media_url: string; media_type: 'image' | 'video' }>>([]);
+  const [mediaRows, setMediaRows] = useState<Array<{ media_url: string; media_type: 'image' | 'video'; file?: File | null }>>([]);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchProductDetails();
@@ -77,14 +78,14 @@ export default function AdminEditProduct() {
   };
 
   const handleAddMediaRow = () => {
-    setMediaRows([...mediaRows, { media_url: '', media_type: 'image' }]);
+    setMediaRows([...mediaRows, { media_url: '', media_type: 'image', file: null }]);
   };
 
   const handleRemoveMediaRow = (index: number) => {
     setMediaRows(mediaRows.filter((_, i) => i !== index));
   };
 
-  const handleMediaChange = (index: number, field: 'media_url' | 'media_type', value: string) => {
+  const handleMediaChange = (index: number, field: 'media_url' | 'media_type' | 'file', value: any) => {
     const newMediaRows = [...mediaRows];
     newMediaRows[index] = { ...newMediaRows[index], [field]: value };
     setMediaRows(newMediaRows);
@@ -112,15 +113,39 @@ export default function AdminEditProduct() {
       ...((userRole === 'admin' || userRole === 'admin_desa') && { user_id: userId || null })
     };
 
+    const formData = new FormData();
+    Object.entries(productData).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formData.append(key, value.toString());
+      }
+    });
+
+    if (thumbnailFile) {
+      formData.append('thumbnail', thumbnailFile);
+    }
+
+    const existingMedia: any[] = [];
+    mediaRows.forEach((media) => {
+      if (media.file) {
+        formData.append('gallery', media.file);
+        formData.append('galleryTypes', media.media_type);
+      } else if (media.media_url) {
+        existingMedia.push({ media_url: media.media_url, media_type: media.media_type });
+      }
+    });
+    
+    if (existingMedia.length > 0) {
+      formData.append('existingMedia', JSON.stringify(existingMedia));
+    }
+
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`/api/products/${id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(productData)
+        body: formData
       });
 
       if (response.ok) {
@@ -234,15 +259,24 @@ export default function AdminEditProduct() {
             />
           </div>
 
-          {/* Thumbnail URL */}
+          {/* Thumbnail URL/File */}
           <div className="flex flex-col gap-sm md:col-span-2">
-            <label className="font-label-md text-label-md text-on-surface">Thumbnail Utama (URL)</label>
+            <label className="font-label-md text-label-md text-on-surface">Upload Thumbnail Utama</label>
+            {thumbnailUrl && !thumbnailFile && (
+              <div className="mb-2">
+                <img src={thumbnailUrl} alt="Current Thumbnail" className="h-24 w-24 object-cover rounded-lg border border-outline-variant" />
+              </div>
+            )}
             <input 
-              required
-              type="text"
-              value={thumbnailUrl}
-              onChange={e => setThumbnailUrl(e.target.value)}
-              className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-shadow"
+              type="file"
+              accept="image/*"
+              required={!thumbnailUrl}
+              onChange={e => {
+                if (e.target.files && e.target.files[0]) {
+                  setThumbnailFile(e.target.files[0]);
+                }
+              }}
+              className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-shadow file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-container file:text-on-primary-container hover:file:bg-primary/20"
             />
           </div>
 
@@ -292,19 +326,32 @@ export default function AdminEditProduct() {
           <div className="flex flex-col gap-sm">
             {mediaRows.map((media, index) => (
               <div key={index} className="flex gap-sm items-start bg-surface-container-low p-sm rounded-lg border border-outline-variant/50">
-                <div className="flex-1 flex flex-col sm:flex-row gap-sm">
-                  <input 
-                    type="text"
-                    required
-                    value={media.media_url}
-                    onChange={e => handleMediaChange(index, 'media_url', e.target.value)}
-                    placeholder="URL Media..."
-                    className="flex-1 bg-surface-container-highest border border-outline-variant/50 rounded-md px-2 py-1 font-body-md text-sm"
-                  />
+                <div className="flex-1 flex flex-col sm:flex-row gap-sm items-center">
+                  {media.media_url && !media.file ? (
+                    <div className="flex-1 bg-surface-container-highest border border-outline-variant/50 rounded-md px-2 py-1 flex items-center justify-between">
+                      <a href={media.media_url} target="_blank" rel="noopener noreferrer" className="text-sm font-body-md text-primary truncate max-w-[200px] inline-block">
+                        {media.media_url}
+                      </a>
+                      <span className="text-xs text-on-surface-variant font-label-sm">(Media Tersimpan)</span>
+                    </div>
+                  ) : (
+                    <input 
+                      type="file"
+                      accept="image/*,video/*"
+                      required={!media.media_url && !media.file}
+                      onChange={e => {
+                        if (e.target.files && e.target.files[0]) {
+                          handleMediaChange(index, 'file', e.target.files[0]);
+                        }
+                      }}
+                      className="flex-1 bg-surface-container-highest border border-outline-variant/50 rounded-md px-2 py-1 font-body-md text-sm file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-primary-container file:text-on-primary-container"
+                    />
+                  )}
+                  
                   <select
                     value={media.media_type}
                     onChange={e => handleMediaChange(index, 'media_type', e.target.value as 'image' | 'video')}
-                    className="bg-surface-container-highest border border-outline-variant/50 rounded-md px-2 py-1 font-body-md text-sm cursor-pointer"
+                    className="bg-surface-container-highest border border-outline-variant/50 rounded-md px-2 py-1.5 font-body-md text-sm cursor-pointer"
                   >
                     <option value="image">Gambar (Image)</option>
                     <option value="video">Video</option>
@@ -313,7 +360,7 @@ export default function AdminEditProduct() {
                 <button 
                   type="button"
                   onClick={() => handleRemoveMediaRow(index)}
-                  className="p-1 text-error hover:bg-error-container rounded-md transition-colors"
+                  className="p-1.5 text-error hover:bg-error-container rounded-md transition-colors mt-0.5"
                 >
                   <span className="material-symbols-outlined text-[20px]">delete</span>
                 </button>

@@ -117,6 +117,22 @@ class ProductRepository {
     if (rows.length === 0) return null;
     return rows[0].user_id;
   }
+
+  async addMedia(productId, mediaUrl, mediaType) {
+    const id = crypto.randomUUID();
+    const sql = 'INSERT INTO product_media (id, product_id, media_url, media_type) VALUES (?, ?, ?, ?)';
+    await db.execute({
+      sql,
+      args: [id, productId, mediaUrl, mediaType]
+    });
+  }
+
+  async deleteMediaByProductId(productId) {
+    await db.execute({
+      sql: 'DELETE FROM product_media WHERE product_id = ?',
+      args: [productId]
+    });
+  }
 }
 
 export default new ProductRepository();

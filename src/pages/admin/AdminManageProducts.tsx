@@ -119,7 +119,7 @@ export default function AdminManageProducts() {
     }
   };
 
-  const handleSaveProduct = async (productData: Omit<Product, 'id'>, mediaData: Omit<ProductMedia, 'id' | 'product_id'>[], thumbnailFile: File | null) => {
+  const handleSaveProduct = async (productData: Omit<Product, 'id'>, mediaRows: Array<{ media_url: string; media_type: 'image' | 'video'; file?: File | null }>, thumbnailFile: File | null) => {
     try {
       const token = localStorage.getItem('token');
       const url = editingProduct 
@@ -135,6 +135,21 @@ export default function AdminManageProducts() {
       });
       if (thumbnailFile) {
         formData.append('thumbnail', thumbnailFile);
+      }
+      
+      const existingMedia: any[] = [];
+      mediaRows.forEach((media) => {
+        if (media.file) {
+          formData.append('gallery', media.file);
+          // Backend needs to know type (since file input doesn't distinguish between image/video for type field)
+          formData.append('galleryTypes', media.media_type);
+        } else if (media.media_url) {
+          existingMedia.push({ media_url: media.media_url, media_type: media.media_type });
+        }
+      });
+      
+      if (existingMedia.length > 0) {
+        formData.append('existingMedia', JSON.stringify(existingMedia));
       }
 
       const response = await fetch(url, {

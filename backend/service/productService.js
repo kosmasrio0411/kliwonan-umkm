@@ -23,7 +23,7 @@ class ProductService {
     return product;
   }
 
-  async createProduct(data, userRole, userId) {
+  async createProduct(data, mediaList = [], userRole, userId) {
     const { name, category, priceNum, imageUrl, description, phone, user_id } = data;
     
     if (!name || !category || !priceNum || !imageUrl || !description) {
@@ -41,10 +41,18 @@ class ProductService {
       user_id: (userRole === 'admin' || userRole === 'admin_desa') ? (user_id || null) : userId
     };
 
-    return await productRepository.create(newProduct);
+    const createdProduct = await productRepository.create(newProduct);
+    
+    if (mediaList && mediaList.length > 0) {
+      for (const media of mediaList) {
+        await productRepository.addMedia(createdProduct.id, media.media_url, media.media_type);
+      }
+    }
+    
+    return createdProduct;
   }
 
-  async updateProduct(id, data, userRole, userId) {
+  async updateProduct(id, data, mediaList = [], userRole, userId) {
     const { name, category, priceNum, imageUrl, description, phone, user_id } = data;
 
     // Check ownership if owner_produk
@@ -72,7 +80,17 @@ class ProductService {
       }
     }
 
-    return await productRepository.update(id, updatedData);
+    const updatedProduct = await productRepository.update(id, updatedData);
+    
+    // Update media list: delete old and insert new ones
+    if (mediaList) {
+      await productRepository.deleteMediaByProductId(id);
+      for (const media of mediaList) {
+        await productRepository.addMedia(id, media.media_url, media.media_type);
+      }
+    }
+    
+    return updatedProduct;
   }
 
   async deleteProduct(id, userRole, userId) {

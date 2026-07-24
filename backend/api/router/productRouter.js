@@ -15,8 +15,13 @@ productRouter.get('/manage', authMiddleware, getManageProducts);
 // This must come after /manage to avoid intercepting it
 productRouter.get('/:id', getProductById); 
 
-productRouter.post('/', authMiddleware, upload.single('thumbnail'), createProduct);
-productRouter.put('/:id', authMiddleware, upload.single('thumbnail'), updateProduct);
+const uploadFields = upload.fields([
+  { name: 'thumbnail', maxCount: 1 },
+  { name: 'gallery', maxCount: 10 }
+]);
+
+productRouter.post('/', authMiddleware, uploadFields, createProduct);
+productRouter.put('/:id', authMiddleware, uploadFields, updateProduct);
 productRouter.delete('/:id', authMiddleware, deleteProduct);
 
 export default productRouter;

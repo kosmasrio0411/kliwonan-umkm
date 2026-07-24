@@ -4,7 +4,7 @@ import { Product, ProductMedia } from '../../types';
 interface ProductFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (product: Omit<Product, 'id'>, media: Omit<ProductMedia, 'id' | 'product_id'>[], thumbnailFile: File | null) => void;
+  onSave: (product: Omit<Product, 'id'>, mediaRows: Array<{ media_url: string; media_type: 'image' | 'video'; file?: File | null }>, thumbnailFile: File | null) => void;
   productToEdit?: Product | null;
   userRole?: string;
   owners?: {id: string, username: string}[];
@@ -23,7 +23,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
   const [userId, setUserId] = useState('');
   
   // Dynamic media rows state
-  const [mediaRows, setMediaRows] = useState<Array<{ media_url: string; media_type: 'image' | 'video' }>>([]);
+  const [mediaRows, setMediaRows] = useState<Array<{ media_url: string; media_type: 'image' | 'video'; file?: File | null }>>([]);
 
   // Reset or pre-populate form when modal opens/closes or productToEdit changes
   useEffect(() => {
@@ -64,14 +64,14 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
   if (!isOpen) return null;
 
   const handleAddMediaRow = () => {
-    setMediaRows([...mediaRows, { media_url: '', media_type: 'image' }]);
+    setMediaRows([...mediaRows, { media_url: '', media_type: 'image', file: null }]);
   };
 
   const handleRemoveMediaRow = (index: number) => {
     setMediaRows(mediaRows.filter((_, i) => i !== index));
   };
 
-  const handleMediaChange = (index: number, field: 'media_url' | 'media_type', value: string) => {
+  const handleMediaChange = (index: number, field: 'media_url' | 'media_type' | 'file', value: any) => {
     const newMediaRows = [...mediaRows];
     newMediaRows[index] = { ...newMediaRows[index], [field]: value };
     setMediaRows(newMediaRows);
@@ -271,19 +271,32 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
             <div className="flex flex-col gap-sm">
               {mediaRows.map((media, index) => (
                 <div key={index} className="flex gap-sm items-start bg-surface-container-low p-sm rounded-lg border border-outline-variant/50">
-                  <div className="flex-1 flex flex-col sm:flex-row gap-sm">
-                    <input 
-                      type="text"
-                      required
-                      value={media.media_url}
-                      onChange={e => handleMediaChange(index, 'media_url', e.target.value)}
-                      placeholder="URL Media..."
-                      className="flex-1 bg-surface-container-highest border border-outline-variant/50 rounded-md px-2 py-1 font-body-md text-sm"
-                    />
+                  <div className="flex-1 flex flex-col sm:flex-row gap-sm items-center">
+                    {media.media_url && !media.file ? (
+                      <div className="flex-1 bg-surface-container-highest border border-outline-variant/50 rounded-md px-2 py-1 flex items-center justify-between">
+                        <a href={media.media_url} target="_blank" rel="noopener noreferrer" className="text-sm font-body-md text-primary truncate max-w-[200px] inline-block">
+                          {media.media_url}
+                        </a>
+                        <span className="text-xs text-on-surface-variant font-label-sm">(Media Tersimpan)</span>
+                      </div>
+                    ) : (
+                      <input 
+                        type="file"
+                        accept="image/*,video/*"
+                        required={!media.media_url && !media.file}
+                        onChange={e => {
+                          if (e.target.files && e.target.files[0]) {
+                            handleMediaChange(index, 'file', e.target.files[0]);
+                          }
+                        }}
+                        className="flex-1 bg-surface-container-highest border border-outline-variant/50 rounded-md px-2 py-1 font-body-md text-sm file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-primary-container file:text-on-primary-container"
+                      />
+                    )}
+                    
                     <select
                       value={media.media_type}
                       onChange={e => handleMediaChange(index, 'media_type', e.target.value as 'image' | 'video')}
-                      className="bg-surface-container-highest border border-outline-variant/50 rounded-md px-2 py-1 font-body-md text-sm cursor-pointer"
+                      className="bg-surface-container-highest border border-outline-variant/50 rounded-md px-2 py-1.5 font-body-md text-sm cursor-pointer"
                     >
                       <option value="image">Gambar (Image)</option>
                       <option value="video">Video</option>
@@ -292,7 +305,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
                   <button 
                     type="button"
                     onClick={() => handleRemoveMediaRow(index)}
-                    className="p-1 text-error hover:bg-error-container rounded-md transition-colors"
+                    className="p-1.5 text-error hover:bg-error-container rounded-md transition-colors mt-0.5"
                   >
                     <span className="material-symbols-outlined text-[20px]">delete</span>
                   </button>
