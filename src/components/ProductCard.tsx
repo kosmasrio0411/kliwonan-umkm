@@ -18,7 +18,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       {/* Thumbnail */}
       <div className="h-48 w-full bg-surface-container-high relative overflow-hidden">
         <img
-          src={product.imageUrl}
+          src={product.thumbnail_url || product.imageUrl}
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
         />
@@ -40,7 +40,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         </p>
 
         <div className="font-headline-md text-[20px] font-bold text-primary mb-md">
-          Rp {Number(product.price).toLocaleString('id-ID')}
+          {product.price}
         </div>
 
         {/* Actions */}

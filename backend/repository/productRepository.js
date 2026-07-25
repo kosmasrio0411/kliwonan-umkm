@@ -14,9 +14,9 @@ class ProductRepository {
 
     if (search) {
       // Use LIKE for case-insensitive search in standard SQLite text
-      conditions.push('(name LIKE ? OR short_description LIKE ? OR long_description LIKE ?)');
+      conditions.push('(name LIKE ?)');
       const likeSearch = `%${search}%`;
-      args.push(likeSearch, likeSearch, likeSearch);
+      args.push(likeSearch);
     }
 
     if (conditions.length > 0) {
