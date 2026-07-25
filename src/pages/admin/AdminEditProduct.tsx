@@ -259,13 +259,14 @@ export default function AdminEditProduct() {
             />
           </div>
 
-          {/* Deskripsi Lengkap */}
+          {/* Deskripsi Singkat */}
           <div className="flex flex-col gap-sm md:col-span-2">
-            <label className="font-label-md text-label-md text-on-surface">Deskripsi Lengkap</label>
+            <label className="font-label-md text-label-md text-on-surface">Deskripsi Singkat</label>
             <textarea 
-              value={longDescription}
-              onChange={e => setLongDescription(e.target.value)}
-              rows={4}
+              required
+              value={shortDescription}
+              onChange={e => setShortDescription(e.target.value)}
+              rows={2}
               className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-shadow resize-y"
             ></textarea>
           </div>
@@ -291,14 +292,13 @@ export default function AdminEditProduct() {
             />
           </div>
 
-          {/* Deskripsi Singkat */}
+          {/* Deskripsi Lengkap */}
           <div className="flex flex-col gap-sm md:col-span-2">
-            <label className="font-label-md text-label-md text-on-surface">Deskripsi Singkat</label>
+            <label className="font-label-md text-label-md text-on-surface">Deskripsi Lengkap</label>
             <textarea 
-              required
-              value={shortDescription}
-              onChange={e => setShortDescription(e.target.value)}
-              rows={2}
+              value={longDescription}
+              onChange={e => setLongDescription(e.target.value)}
+              rows={4}
               className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-shadow resize-y"
             ></textarea>
           </div>
