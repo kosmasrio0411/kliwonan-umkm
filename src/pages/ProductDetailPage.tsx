@@ -197,9 +197,6 @@ export default function ProductDetailPage() {
                 </svg>
                 <span className="font-label-md text-label-md">Pesan via WhatsApp</span>
               </a>
-              <p className="text-center mt-2 font-label-sm text-label-sm text-on-surface-variant">
-                Respon cepat selama jam kerja (08:00 – 17:00)
-              </p>
             </div>
 
             <hr className="border-outline-variant/30" />
@@ -208,7 +205,7 @@ export default function ProductDetailPage() {
             <div className="flex flex-col gap-xs">
               <h3 className="font-label-md text-label-md text-on-surface">Deskripsi Produk</h3>
               <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed whitespace-pre-line">
-                {product.long_description}
+                {product.long_description || product.short_description || product.description || 'Tidak ada deskripsi.'}
               </p>
             </div>
 

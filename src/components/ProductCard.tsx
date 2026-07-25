@@ -8,7 +8,7 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const navigate = useNavigate();
 
-  const waLink = `https://wa.me/${product.phone}?text=Halo,%20saya%20tertarik%20dengan%20produk%20${encodeURIComponent(product.name)}`;
+  const waLink = `https://wa.me/${product.whatsapp_number || product.phone}?text=Halo,%20saya%20tertarik%20dengan%20produk%20${encodeURIComponent(product.name)}`;
 
   return (
     <article
