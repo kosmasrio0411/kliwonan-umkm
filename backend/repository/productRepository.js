@@ -119,11 +119,10 @@ class ProductRepository {
   }
 
   async addMedia(productId, mediaUrl, mediaType) {
-    const id = crypto.randomUUID();
-    const sql = 'INSERT INTO product_media (id, product_id, media_url, media_type) VALUES (?, ?, ?, ?)';
+    const sql = 'INSERT INTO product_media (product_id, media_url, media_type) VALUES (?, ?, ?)';
     await db.execute({
       sql,
-      args: [id, productId, mediaUrl, mediaType]
+      args: [productId, mediaUrl, mediaType]
     });
   }
 

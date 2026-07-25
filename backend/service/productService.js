@@ -24,7 +24,7 @@ class ProductService {
   }
 
   async createProduct(data, mediaList = [], userRole, userId) {
-    const { name, category, priceNum, imageUrl, description, phone, user_id } = data;
+    const { name, category, price, priceNum, imageUrl, description, phone, user_id } = data;
     
     if (!name || !category || !priceNum || !imageUrl || !description) {
       throw new Error('All fields (name, category, priceNum, imageUrl, description) are required');
@@ -33,7 +33,7 @@ class ProductService {
     const newProduct = {
       name,
       category,
-      price: Number(priceNum),
+      price: price || `Rp ${Number(priceNum).toLocaleString('id-ID')}`,
       thumbnail_url: imageUrl,
       short_description: description,
       long_description: description,
@@ -53,7 +53,7 @@ class ProductService {
   }
 
   async updateProduct(id, data, mediaList = [], userRole, userId) {
-    const { name, category, priceNum, imageUrl, description, phone, user_id } = data;
+    const { name, category, price, priceNum, imageUrl, description, phone, user_id } = data;
 
     // Check ownership if owner_produk
     if (userRole === 'owner_produk') {
@@ -68,7 +68,7 @@ class ProductService {
     const updatedData = {
       ...(name && { name }),
       ...(category && { category }),
-      ...(priceNum && { price: Number(priceNum) }),
+      ...((price || priceNum) && { price: price || `Rp ${Number(priceNum).toLocaleString('id-ID')}` }),
       ...(imageUrl && { thumbnail_url: imageUrl }),
       ...(description && { short_description: description, long_description: description }),
       ...(phone && { whatsapp_number: phone }),
