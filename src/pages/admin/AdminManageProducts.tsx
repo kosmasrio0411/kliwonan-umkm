@@ -14,6 +14,7 @@ export default function AdminManageProducts() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [owners, setOwners] = useState<{id: string, username: string}[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('Semua');
@@ -121,6 +122,7 @@ export default function AdminManageProducts() {
 
   const handleSaveProduct = async (productData: Omit<Product, 'id'>, mediaRows: Array<{ media_url: string; media_type: 'image' | 'video'; file?: File | null }>, thumbnailFile: File | null) => {
     try {
+      setIsSaving(true);
       const token = localStorage.getItem('token');
       const url = editingProduct 
         ? `/api/products/${editingProduct.id}` 
@@ -170,6 +172,8 @@ export default function AdminManageProducts() {
       }
     } catch (error) {
       alert('Terjadi kesalahan saat menyimpan produk.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -357,6 +361,7 @@ export default function AdminManageProducts() {
         productToEdit={editingProduct}
         userRole={userRole}
         owners={owners}
+        isSaving={isSaving}
       />
     </div>
   );

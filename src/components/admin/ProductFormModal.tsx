@@ -8,9 +8,10 @@ interface ProductFormModalProps {
   productToEdit?: Product | null;
   userRole?: string;
   owners?: {id: string, username: string}[];
+  isSaving?: boolean;
 }
 
-export default function ProductFormModal({ isOpen, onClose, onSave, productToEdit, userRole, owners }: ProductFormModalProps) {
+export default function ProductFormModal({ isOpen, onClose, onSave, productToEdit, userRole, owners, isSaving }: ProductFormModalProps) {
   // Form state
   const [name, setName] = useState('');
   const [category, setCategory] = useState('UMKM');
@@ -333,9 +334,10 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
             </button>
             <button 
               type="submit"
-              className="px-lg py-sm font-label-md text-label-md text-on-primary bg-primary hover:opacity-90 rounded-lg transition-opacity shadow-sm"
+              disabled={isSaving}
+              className="px-lg py-sm font-label-md text-label-md text-on-primary bg-primary hover:opacity-90 rounded-lg transition-opacity shadow-sm disabled:opacity-50 flex items-center gap-2"
             >
-              Simpan Produk
+              {isSaving ? 'Menyimpan...' : 'Simpan Produk'}
             </button>
           </div>
         </form>
