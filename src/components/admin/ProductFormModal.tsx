@@ -120,9 +120,9 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-md md:p-lg flex flex-col gap-lg bg-surface max-h-[70vh] overflow-y-auto">
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+        <form onSubmit={handleSubmit} className="flex flex-col bg-surface overflow-hidden">
+          <div className="p-md md:p-lg flex flex-col gap-lg max-h-[70vh] overflow-y-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
             {/* Nama Produk */}
             <div className="flex flex-col gap-sm md:col-span-2">
               <label className="font-label-md text-label-md text-on-surface">Nama Produk</label>
@@ -320,9 +320,10 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
               )}
             </div>
           </div>
+          </div>
 
           {/* Footer Actions */}
-          <div className="flex justify-end gap-md pt-md border-t border-surface-container-high mt-4 sticky bottom-0 bg-surface">
+          <div className="flex justify-end gap-md p-md md:px-lg border-t border-surface-container-high bg-surface shrink-0 z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
             <button 
               type="button"
               onClick={onClose}
