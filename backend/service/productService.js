@@ -24,9 +24,9 @@ class ProductService {
   }
 
   async createProduct(data, mediaList = [], userRole, userId) {
-    const { name, category, price, priceNum, imageUrl, description, phone, user_id } = data;
+    const { name, category, price, priceNum, imageUrl, description, short_description, long_description, phone, user_id } = data;
     
-    if (!name || !category || !priceNum || !imageUrl || !description) {
+    if (!name || !category || !priceNum || !imageUrl || (!description && !short_description)) {
       throw new Error('All fields (name, category, priceNum, imageUrl, description) are required');
     }
 
@@ -35,8 +35,8 @@ class ProductService {
       category,
       price: price || `Rp ${Number(priceNum).toLocaleString('id-ID')}`,
       thumbnail_url: imageUrl,
-      short_description: description,
-      long_description: description,
+      short_description: short_description || description,
+      long_description: long_description || description,
       whatsapp_number: phone || '6281234567890',
       user_id: (userRole === 'admin' || userRole === 'admin_desa') ? (user_id || null) : userId
     };
@@ -53,7 +53,7 @@ class ProductService {
   }
 
   async updateProduct(id, data, mediaList = [], userRole, userId) {
-    const { name, category, price, priceNum, imageUrl, description, phone, user_id } = data;
+    const { name, category, price, priceNum, imageUrl, description, short_description, long_description, phone, user_id } = data;
 
     // Check ownership if owner_produk
     if (userRole === 'owner_produk') {
@@ -65,12 +65,16 @@ class ProductService {
       }
     }
 
+    const finalShortDesc = short_description || description;
+    const finalLongDesc = long_description || description;
+
     const updatedData = {
       ...(name && { name }),
       ...(category && { category }),
       ...((price || priceNum) && { price: price || `Rp ${Number(priceNum).toLocaleString('id-ID')}` }),
       ...(imageUrl && { thumbnail_url: imageUrl }),
-      ...(description && { short_description: description, long_description: description }),
+      ...(finalShortDesc && { short_description: finalShortDesc }),
+      ...(finalLongDesc && { long_description: finalLongDesc }),
       ...(phone && { whatsapp_number: phone }),
     };
 
