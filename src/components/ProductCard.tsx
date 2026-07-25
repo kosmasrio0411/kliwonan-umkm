@@ -16,7 +16,10 @@ export default function ProductCard({ product }: ProductCardProps) {
       className="bg-surface rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col border border-surface-variant/50 relative"
     >
       {/* Thumbnail */}
-      <div className="h-48 w-full bg-surface-container-high relative overflow-hidden">
+      <div 
+        className="h-48 w-full bg-surface-container-high relative overflow-hidden cursor-pointer"
+        onClick={() => navigate(`/product/${product.id}`)}
+      >
         <img
           src={product.thumbnail_url || product.imageUrl}
           alt={product.name}
@@ -32,7 +35,10 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       {/* Content */}
       <div className="p-md flex flex-col flex-grow">
-        <h3 className="font-label-md text-label-md text-on-background mb-xs line-clamp-1">
+        <h3 
+          className="font-label-md text-label-md text-on-background mb-xs line-clamp-1 cursor-pointer hover:text-primary transition-colors"
+          onClick={() => navigate(`/product/${product.id}`)}
+        >
           {product.name}
         </h3>
         <p className="font-body-md text-body-md text-on-surface-variant text-sm line-clamp-2 mb-md flex-grow">

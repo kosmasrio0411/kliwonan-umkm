@@ -4,39 +4,6 @@ import Footer from '../components/Footer';
 import { PRODUCTS } from '../data/products';
 import type { Thumbnail } from '../types';
 
-// Per-product thumbnail data (mock; in production this would come from API)
-const PRODUCT_THUMBNAILS: Record<number, Thumbnail[]> = {
-  1: [
-    {
-      src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCMEfR0lpC85l91mJXwDmnq9sjpAbEpCDFsv2ZtOJ2ucJeNh9oJbzdR1bYyHL18D35IrUGQT8jhr1NGvHaakIvVswsFtW5WJY31XE69g8qX519URpmK3dGx60qcDZwnhnD2iE8fsxL5kg61WGEDDvOSRI1Nd6K-RRwACMGuuwYrLgNzYjUTieYx6qbG0zL0DdzNFXJxeSmf3bf0WNpCpNnYJs_TrYrclSr6V5AONCSFl3m-uEhTWf-s',
-      alt: 'Kopi Arabika Gayo - Tampak Utama',
-    },
-    {
-      src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuArWEJsp-jXG4aqaqELy9Rogb1HDjqBu8KK8xqWVbLnmlkxH0Cvmfi0YZhcmFUCnmzI_gKXYgnlOW0Pat3KKrQc1esxO-ebVToVQSpioF-2VvB3ShwDjF3WfMF98z8aBpyh3IaTheigZhLIQ9OqLGRVkVtz_70l7Zf-sl8LU7DBZAzSgFDTv30BnVBCndq1fx4iuAGNkTAYE1fRhR5xWK3DM0H69wqs8Yy5LwasIV4nHwvvUAhZZxmJ',
-      alt: 'Kopi Arabika Gayo - Kemasan',
-    },
-    {
-      src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDkhWErgBZ7XwffeL6hv9VSyR3cGCqL7fQsRrMZ-LuFlEEA7YJgNOGw-AlgU6os8xjCjndw4X8MyjQFZN9_wEWVGYp0a4rpQxJ5Gjl0Ew3fmJIhY_8xdlcrU6I95SSxMqSojeDcXE0OZZ1l0NzE9-w8HJStihuRhbux3voUIZ1Xa18EgTMapXARiffMA-O-XQmd-3A8hVcoGyykmdKf81JfZBVhLJN8EWZjiW3tjq9autsQTVGGDYlv',
-      alt: 'Kopi Arabika Gayo - Proses',
-    },
-    {
-      src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDW5dx1f7aB3HTmi9R19yZgY5tvCNmwjwjDXB8f3kr11UmBmsr7aeVNpg2W0kH_7gNnm9nPzMHB4uecVBM8zcJb7l77iW-SMLRtWaVrZ29EHFFsKlkMPWnTbgp0nM0nPK3nhI4aNbLPFQ-2ZT2NQ0wU6JPrZVNItdChYQJq94cW4xRBKPPna8KA6zgE3xMHnGZQRF1OUsmHlpl7SOAPn1uW-S0zy91CCWYeBx7U5gT-90c6J6HhgIEI',
-      alt: 'Kopi Arabika Gayo - Video',
-      isVideo: true,
-    },
-  ],
-};
-
-// Fallback: build 4 thumbnails from product image for products without specific data
-function getThumbsForProduct(id: number, imageUrl: string): Thumbnail[] {
-  if (PRODUCT_THUMBNAILS[id]) return PRODUCT_THUMBNAILS[id];
-  return [
-    { src: imageUrl, alt: 'Gambar produk 1' },
-    { src: imageUrl, alt: 'Gambar produk 2' },
-    { src: imageUrl, alt: 'Gambar produk 3' },
-    { src: imageUrl, alt: 'Video produk', isVideo: true },
-  ];
-}
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -89,8 +56,19 @@ export default function ProductDetailPage() {
     );
   }
 
-  const thumbnails = getThumbsForProduct(product.id, product.thumbnail_url || product.imageUrl || 'https://via.placeholder.com/600');
-  const activeThumb = thumbnails[activeIndex];
+  let thumbnails: Thumbnail[] = [];
+  if (product.media && product.media.length > 0) {
+    thumbnails = product.media.map((m: any, idx: number) => ({
+      src: m.media_url,
+      alt: `Media ${idx + 1}`,
+      isVideo: m.media_type === 'video'
+    }));
+  } else {
+    thumbnails = [{ src: product.thumbnail_url || product.imageUrl || 'https://via.placeholder.com/600', alt: product.name }];
+  }
+  
+  const currentThumbIndex = activeIndex < thumbnails.length ? activeIndex : 0;
+  const activeThumb = thumbnails[currentThumbIndex];
   const waLink = `https://wa.me/${product.whatsapp_number || product.phone}?text=Halo,%20saya%20ingin%20memesan%20${encodeURIComponent(product.name)}`;
 
   return (
@@ -197,7 +175,7 @@ export default function ProductDetailPage() {
                 {product.name}
               </h1>
               <div className="font-headline-md text-headline-md text-primary">
-                Rp {Number(product.price).toLocaleString('id-ID')}{' '}
+                {product.price}{' '}
                 <span className="font-body-md text-body-md text-on-surface-variant font-normal">
                   / paket
                 </span>
@@ -210,19 +188,8 @@ export default function ProductDetailPage() {
             <div className="flex flex-col gap-xs">
               <h3 className="font-label-md text-label-md text-on-surface">Deskripsi Produk</h3>
               <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed whitespace-pre-line">
-                {product.long_description || product.short_description}
+                {product.long_description}
               </p>
-            </div>
-
-            {/* Origin Info */}
-            <div className="bg-surface-container-low p-md rounded-xl flex items-start gap-md shadow-level-1">
-              <span className="material-symbols-outlined text-secondary">location_on</span>
-              <div>
-                <h4 className="font-label-md text-label-md text-on-surface">Asal Produk</h4>
-                <p className="font-body-md text-body-md text-on-surface-variant">
-                  Kelompok Tani Makmur Jaya, Desa Kliwonan, Jawa Tengah.
-                </p>
-              </div>
             </div>
 
             {/* Primary CTA — Desktop */}
