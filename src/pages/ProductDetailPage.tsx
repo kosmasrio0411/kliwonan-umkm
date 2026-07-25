@@ -110,13 +110,7 @@ export default function ProductDetailPage() {
             <span className="font-label-md text-label-md">Kembali ke Katalog</span>
           </button>
           <div className="font-headline-lg text-headline-lg font-bold text-primary flex items-center gap-2 min-h-[40px]">
-            <span
-              className="material-symbols-outlined text-primary"
-              data-fill="1"
-              style={{ fontSize: '32px' }}
-            >
-              spa
-            </span>
+            <img src="/logo_kliwonan.png" alt="Logo Kliwonan" className="h-8 md:h-10 w-auto" />
             <span className="hidden sm:inline">Lapak Kliwonan</span>
           </div>
         </div>

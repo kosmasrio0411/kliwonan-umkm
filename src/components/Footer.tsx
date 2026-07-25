@@ -27,9 +27,6 @@ export default function Footer({ variant = 'full' }: FooterProps) {
         {/* Brand */}
         <div className="flex flex-col items-center md:items-start gap-2">
           <div className="font-headline-md text-headline-md font-bold text-primary flex items-center gap-2">
-            <span className="material-symbols-outlined" data-fill="1">
-              spa
-            </span>
             Lapak Kliwonan
           </div>
           <p className="font-body-md text-body-md text-on-surface-variant text-center md:text-left">
