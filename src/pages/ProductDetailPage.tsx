@@ -205,7 +205,7 @@ export default function ProductDetailPage() {
             <div className="flex flex-col gap-xs">
               <h3 className="font-label-md text-label-md text-on-surface">Deskripsi Produk</h3>
               <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed whitespace-pre-line">
-                {product.long_description || product.short_description || product.description || 'Tidak ada deskripsi.'}
+                {product.long_description}
               </p>
             </div>
 
