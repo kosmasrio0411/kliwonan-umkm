@@ -101,7 +101,7 @@ export const createProduct = async (req, res) => {
     if (error.message.includes('All fields')) {
       return res.status(400).json({ status: 'error', message: error.message });
     }
-    return res.status(500).json({ status: 'error', message: 'Internal server error' });
+    return res.status(500).json({ status: 'error', message: 'Internal server error: ' + error.message });
   }
 };
 
@@ -157,7 +157,7 @@ export const updateProduct = async (req, res) => {
     if (error.statusCode) {
       return res.status(error.statusCode).json({ status: 'error', message: error.message });
     }
-    return res.status(500).json({ status: 'error', message: 'Internal server error' });
+    return res.status(500).json({ status: 'error', message: 'Internal server error: ' + error.message });
   }
 };
 
@@ -175,6 +175,6 @@ export const deleteProduct = async (req, res) => {
     if (error.statusCode) {
       return res.status(error.statusCode).json({ status: 'error', message: error.message });
     }
-    return res.status(500).json({ status: 'error', message: 'Internal server error' });
+    return res.status(500).json({ status: 'error', message: 'Internal server error: ' + error.message });
   }
 };

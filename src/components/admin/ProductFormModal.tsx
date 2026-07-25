@@ -181,7 +181,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
               <label className="font-label-md text-label-md text-on-surface">Harga (Rp)</label>
               <input 
                 required
-                type="number"
+                type="text"
                 value={price}
                 onChange={e => setPrice(e.target.value)}
                 placeholder="0"

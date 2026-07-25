@@ -240,7 +240,7 @@ export default function AdminEditProduct() {
             <label className="font-label-md text-label-md text-on-surface">Harga (Rp)</label>
             <input 
               required
-              type="number"
+              type="text"
               value={price}
               onChange={e => setPrice(e.target.value)}
               className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-shadow"
