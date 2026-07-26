@@ -72,8 +72,7 @@ export default function PartnerPage() {
               <ol className="list-decimal list-inside font-body-md text-body-md text-on-surface-variant space-y-4">
                 <li><strong className="text-on-background">Siapkan Data:</strong> Siapkan foto produk unggulan, dan detail informasi produk (harga, deskripsi, komposisi).</li>
                 <li><strong className="text-on-background">Hubungi Admin:</strong> Hubungi tim Lapak Kliwonan melalui WhatsApp resmi kami di <a href="https://wa.me/6289658077981" className="text-primary hover:underline">0896-5807-7981</a>.</li>
-                <li><strong className="text-on-background">Kurasi & Verifikasi:</strong> Tim kami akan meninjau produk Anda untuk memastikan standar kualitas.</li>
-                <li><strong className="text-on-background">Mulai Berjualan:</strong> Setelah disetujui, produk Anda akan langsung tampil di etalase website Lapak Kliwonan!</li>
+                <li><strong className="text-on-background">Mulai Berjualan:</strong> Produk Anda akan langsung tampil di etalase website Lapak Kliwonan!</li>
               </ol>
             </div>
             
