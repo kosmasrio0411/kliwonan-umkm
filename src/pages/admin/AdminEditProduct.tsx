@@ -57,7 +57,7 @@ export default function AdminEditProduct() {
         const productToEdit = data.data;
         setName(productToEdit.name);
         setCategory(productToEdit.category);
-        setPrice(productToEdit.priceNum?.toString() || String(productToEdit.price || '').replace(/\D/g, ''));
+        setPrice(String(productToEdit.price || '').replace(/^Rp\s*/, ''));
         setWhatsappNumber(productToEdit.whatsapp_number || productToEdit.phone || '628');
         setShortDescription(productToEdit.short_description || productToEdit.description || '');
         setLongDescription(productToEdit.long_description || '');
@@ -95,14 +95,13 @@ export default function AdminEditProduct() {
     e.preventDefault();
     setSaving(true);
     
-    const priceNum = parseInt(String(price).replace(/\D/g, ''), 10) || 0;
-    const formattedPrice = `Rp ${priceNum.toLocaleString('id-ID')}`;
+    const formattedPrice = price;
     
     const productData = {
       name,
       category,
       price: formattedPrice,
-      priceNum,
+      priceNum: 0,
       phone: whatsappNumber,
       whatsapp_number: whatsappNumber,
       description: shortDescription,

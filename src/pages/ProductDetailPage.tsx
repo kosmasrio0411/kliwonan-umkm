@@ -176,7 +176,7 @@ export default function ProductDetailPage() {
                 {product.name}
               </h1>
               <div className="font-headline-md text-headline-md text-primary">
-                {product.price}{' '}
+                Rp {product.price}{' '}
                 <span className="font-body-md text-body-md text-on-surface-variant font-normal">
                   / paket
                 </span>

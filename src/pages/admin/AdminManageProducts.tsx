@@ -304,7 +304,7 @@ export default function AdminManageProducts() {
                       {product.category}
                     </span>
                   </td>
-                  <td className="p-md">{product.price}</td>
+                  <td className="p-md">Rp {product.price}</td>
                   <td className="p-md text-right whitespace-nowrap">
                     <div className="flex items-center justify-end gap-sm transition-opacity">
                       <button 
